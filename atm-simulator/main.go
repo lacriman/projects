@@ -9,12 +9,35 @@ import (
 )
 
 func main() {
+	var balance int
+	var action int
 	fmt.Println("Welcome to the ATM")
 
 	checkPin()
-	balance := readPositiveInt("Write your balance: ")
+	balance = readPositiveInt("Write your balance: ")
+	fmt.Printf("Your balance is: %d\n", balance)
+	fmt.Println("What do you want to do?")
 
-	fmt.Printf("Your balance is: %d", balance)
+	for {
+		fmt.Println("\t1 = Withdraw\n\t2 = Deposit\n\t3 = Exit")
+		action = readPositiveInt("Action: ")
+
+		switch action {
+		case 1:
+			fmt.Println("Withdraw selected.")
+
+		case 2:
+			fmt.Println("Deposit selected.")
+
+		case 3:
+			fmt.Println("Goodbye.")
+			os.Exit(0)
+		default:
+			fmt.Println("Wrong input, write something from 1 to 3.")
+
+		}
+	}
+
 }
 
 func checkPin() {
@@ -40,7 +63,7 @@ func checkPin() {
 
 }
 
-func readPositiveInt (message string) int {
+func readPositiveInt(message string) int {
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
 		fmt.Print(message)
