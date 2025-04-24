@@ -16,24 +16,28 @@ func main() {
 	checkPin()
 	balance = readPositiveInt("Write your balance: ")
 	fmt.Printf("Your balance is: %d\n", balance)
-	fmt.Println("What do you want to do?")
 
 	for {
+		fmt.Println("\nWhat do you want to do?")
 		fmt.Println("\t1 = Withdraw\n\t2 = Deposit\n\t3 = Exit")
 		action = readPositiveInt("Action: ")
 
 		switch action {
 		case 1:
-			fmt.Println("Withdraw selected.")
-
+			fmt.Println("\nWithdraw selected.")
+			withdraw(&balance)
+			break
 		case 2:
-			fmt.Println("Deposit selected.")
+			fmt.Println("\nDeposit selected.")
+			deposit(&balance)
+			showBalance(balance)
+			break
 
 		case 3:
-			fmt.Println("Goodbye.")
+			fmt.Println("\nGoodbye.")
 			os.Exit(0)
 		default:
-			fmt.Println("Wrong input, write something from 1 to 3.")
+			fmt.Println("\nWrong input, write something from 1 to 3.")
 
 		}
 	}
@@ -80,10 +84,28 @@ func readPositiveInt(message string) int {
 	}
 }
 
-// func withdraw() {
+func withdraw(balance *int) {
+	if *balance == 0 {
+		fmt.Println("\nYour balance is 0, you can't withdraw.")
+		return
+	}
+	for {
+		amount := readPositiveInt("\nHow much money do you want to withdraw?\nAmount: ")
+		if *balance-amount < 0 {
+			fmt.Println("\nSorry, you don't have enough money.")
+			continue
+		}
+		*balance -= amount
+		showBalance(*balance)
+		break
+	}
+}
 
-// }
+func deposit(balance *int) {
+	amount := readPositiveInt("\nHow much money do you want to deposit?\nAmount: ")
+	*balance += amount
+}
 
-// func deposit() {
-
-// }
+func showBalance(balance int) {
+	fmt.Printf("\nYour balance now is: %d", balance)
+}
