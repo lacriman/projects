@@ -12,103 +12,55 @@ import (
 func main() {
 	var balance int
 	fmt.Println("Welcome to the ATM")
-	checkPin()
 
-	for {
-		input := promptUser("\nWrite your balance: ")
-		bal, err := readPositiveInt(input)
-
-		if err != nil {
-			fmt.Printf("\nError: %v", err)
-			continue
-		}
-		balance = bal
-		fmt.Printf("\nYour balance is: %d", balance)
-		break
+	err := checkPin()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
 	}
-
-	for {
-		fmt.Println("\nWhat do you want to do?")
-		fmt.Println("\t1 = Withdraw\n\t2 = Deposit\n\t3 = Exit")
-		input := promptUser("\nAction: ")
-		action, err := readPositiveInt(input)
-
-		if err != nil {
-			fmt.Printf("\nError: %v", err)
-			continue
-		}
-
-		switch action {
-		case 1:
-			fmt.Println("\nWithdraw selected.")
-			err := withdraw(&balance)
-			if err != nil {
-				fmt.Printf("\nError: %v\n", err)
-			}
-		case 2:
-			fmt.Println("\nDeposit selected.")
-			
-			showBalance(balance)
-			err := deposit(&balance)
-			if err != nil {
-				fmt.Printf("\nError: %v\n", err)
-			}
-		case 3:
-			fmt.Println("\nGoodbye.")
-			os.Exit(0)
-		default:
-			fmt.Println("You have to write a number from 1 to 3.")
-			continue
-
-		}
-	}
+	enterBalance(&balance)
+	action(&balance)
 }
 
-func checkPin() {
+func checkPin() error {
 	pin := 1234
 	attempts := 3
 
 	for attempts > 0 {
-		input := promptUser("\nPlease write your PIN code: ")
-		guess, err := readPositiveInt(input)
+		guess, err := readPositiveInt("\nPlease write your PIN code: ")
 
 		if err != nil {
-			fmt.Printf("\nError: %v", err)
-			continue
-		}
-
-		if guess == pin {
+			attempts--
+			fmt.Fprintf(os.Stderr, "Invalid input! Please write numbers only. You have %d more attempts.\n", attempts)
+		} else if guess == pin {
 			fmt.Println("PIN correct.")
-			break
-		}
-		attempts--
-
-		if attempts == 0 {
-			fmt.Println("\nYou have no attempts left, the card is blocked.")
-			os.Exit(1)
+			return nil
 		} else {
-			fmt.Printf("\nWrong! You have %d more attempts. \n", attempts)
+			attempts--
+			fmt.Fprintf(os.Stderr, "\nWrong! You have %d more attempts. \n", attempts)
 		}
-
+	}
+	if attempts == 0 {
+		fmt.Fprintf(os.Stderr, "\nYou have no attempts left, the card is blocked.\n")
+		return errors.New("no attempts left, card blocked")
 	}
 
+	return nil
 }
 
 func promptUser(message string) string {
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Println(message)
-
-	
-
 	scanner.Scan()
 	return strings.TrimSpace(scanner.Text())
 }
 
-func readPositiveInt(input string) (int, error) {
+func readPositiveInt(message string) (int, error) {
+	input := promptUser(message)
 	num, err := strconv.Atoi(input)
 
 	if err != nil {
-		return 0, fmt.Errorf("Something went wrong: %v", err)
+		return 0, err
 	}
 	if num <= 0 {
 		return 0, errors.New("The number has to be greater than 0")
@@ -116,40 +68,79 @@ func readPositiveInt(input string) (int, error) {
 	return num, nil
 }
 
-func withdraw(balance *int) error {
-	if *balance == 0 {
-		return errors.New("Your balance is 0, you can't withdraw.")
+func enterBalance(balance *int) error {
+	bal, err := readPositiveInt("\nWrite your balance: ")
+	if err != nil {
+		return err
 	}
+	*balance = bal
+	showBalance(*balance)
+	return nil
+}
 
+func action(balance *int) error {
 	for {
-		input := promptUser("\nHow much money do you want to withdraw?\nAmount: ")
-		amount, err := readPositiveInt(input)
+		fmt.Println("\nWhat do you want to do?")
+		fmt.Println("\t1 = Withdraw\n\t2 = Deposit\n\t3 = Exit")
+		action, err := readPositiveInt("\nAction: ")
+
 		if err != nil {
-			fmt.Printf("\nError: %v\n", err)
-			continue
+			return err
 		}
 
-		if amount > *balance {
-			fmt.Println("Sorry, you don't have enough money.")
+		switch action {
+		case 1:
+			fmt.Println("\nWithdraw selected.")
+			err := withdraw(balance)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "\nError: %v\n", err)
+			}
+		case 2:
+			fmt.Println("\nDeposit selected.")
+			err := deposit(balance)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "\nError: %v\n", err)
+			}
+		case 3:
+			fmt.Println("\nGoodbye.")
+			os.Exit(0)
+		default:
+			fmt.Println("You have to write a number from 1 to 3.")
 			continue
 		}
-
-		*balance -= amount
-		showBalance(*balance)
-		return nil
 	}
 }
 
-func deposit(balance *int) error {
-	input := promptUser("\nHow much money do you want to deposit?\nAmount: ")
-	amount, err := readPositiveInt(input)
+func withdraw(balance *int) error {
+	amount, err := readPositiveInt("\nHow much money do you want to withdraw?\nAmount: ")
+
 	if err != nil {
-		return fmt.Errorf("Error: %v", err)
+		return err
+	}
+	if *balance == 0 {
+		return errors.New("Your balance is 0, you can't withdraw.")
+	}
+	if amount > *balance {
+		return errors.New("Sorry, you don't have enough money.")
+	}
+
+	*balance -= amount
+	showBalance(*balance)
+
+	return nil
+}
+
+func deposit(balance *int) error {
+	amount, err := readPositiveInt("\nHow much money do you want to deposit?\nAmount: ")
+	if err != nil {
+		return err
 	}
 	*balance += amount
+	showBalance(*balance)
+
 	return nil
 }
 
 func showBalance(balance int) {
-	fmt.Printf("\nYour balance now is: %d", balance)
+	fmt.Printf("\nYour balance now is: %d\n", balance)
 }
