@@ -1,0 +1,3 @@
+Concurrency in Golang is based on goroutines and channels.
+To master Golang, you need to understand these tools well.
+Many people use Golang for building scalable systems.

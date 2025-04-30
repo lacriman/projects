@@ -1,0 +1,3 @@
+Golang is a powerful language.
+Many developers love Golang for its simplicity and performance.
+Writing concurrent code in Golang is fun and educational.

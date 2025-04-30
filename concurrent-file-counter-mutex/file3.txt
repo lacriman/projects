@@ -1,0 +1,3 @@
+Golang, Golang, and more Golang.
+Yes, we’re talking about Golang again.
+Why? Because Golang just works.
