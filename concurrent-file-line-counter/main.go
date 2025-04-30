@@ -1,24 +1,24 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
-	"strings"
 	"sync"
 )
 
 func main() {
 	var wg sync.WaitGroup
 	files := os.Args[1:]
-	
+
 	for _, file := range files {
-		file:= file
+		file := file
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			err:=lineCounter(file)
+			err := lineCounter(file)
 			if err != nil {
-			  fmt.Printf("error: %v\n", err)
+				fmt.Printf("error: %v\n", err)
 			}
 		}()
 	}
@@ -26,12 +26,18 @@ func main() {
 	wg.Wait()
 }
 
-func lineCounter(file string) error{
-	data, err := os.ReadFile(file)
+func lineCounter(file string) error {
+	f, err := os.Open(file)
 	if err != nil {
-		return fmt.Errorf("Can't find a file %s", file)
+		return fmt.Errorf("cannot read file %v: %v\n",file, err)
 	}
-	lines := strings.Split(string(data), "\n")
-	fmt.Printf("Number of lines in file %s: %d\n",file, len(lines))
-	return	nil
+	defer f.Close()
+
+	scanner := bufio.NewScanner(f)
+	counter := 0
+	for scanner.Scan() {
+		counter++
+	}
+	fmt.Printf("The number of lines in %s is %d\n", file, counter)
+	return nil
 }
