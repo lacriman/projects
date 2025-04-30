@@ -1,13 +1,13 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"os"
-	"time"
+	"sync"
 )
 
 func main() {
+	var wg sync.WaitGroup
 	tasks := [][2]int{
 		{10, 2},
 		{9, 3},
@@ -16,9 +16,14 @@ func main() {
 	}
 
 	for _, pair := range tasks {
-		go divideAndPrint(pair[0], pair[1])
+		pair := pair
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			divideAndPrint(pair[0], pair[1])
+		}()
 	}
-	time.Sleep(1 * time.Second)
+	wg.Wait()
 }
 
 func divideAndPrint(a, b int) {
@@ -33,7 +38,7 @@ func divideAndPrint(a, b int) {
 
 func divide(a, b int) (int, error) {
 	if b == 0 {
-		return 0, errors.New("division by zero")
+		return 0, fmt.Errorf("cannot divide %v by zero", a)
 	}
 	return a / b, nil
 }
