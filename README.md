@@ -8,16 +8,22 @@ Each subfolder contains a standalone `main.go` file with zero dependencies beyon
 
 ### Projects Included
 
-| Project                      | Description                                               |
-|-----------------------------|-----------------------------------------------------------|
-| `atm-simulator`             | Simulates an ATM interface with PIN check, withdraw, deposit, and balance handling |
-| `calculator`                | Basic CLI calculator that performs arithmetic operations  |
-| `concurrent-square-calculator` | Demonstrates concurrency using goroutines and channels   |
-| `fibonacci`                 | Generates a Fibonacci sequence up to a given number       |
-| `fizzbuzz`                  | Classic FizzBuzz challenge using loops and conditionals    |
-| `grade-tracker`             | Accepts and validates user input to calculate average grade |
+| Project                        | Description                                                                        |
+| ------------------------------ | ---------------------------------------------------------------------------------- |
+| `atm-simulator`                | Simulates an ATM interface with PIN check, withdraw, deposit, and balance handling |
+| `calculator`                   | Basic CLI calculator that performs arithmetic operations                           |
+| `concurrent-square-calculator` | Demonstrates concurrency using goroutines and channels                             |
+| `fibonacci`                    | Generates a Fibonacci sequence up to a given number                                |
+| `fizzbuzz`                     | Classic FizzBuzz challenge using loops and conditionals                            |
+| `grade-tracker`                | Accepts and validates user input to calculate average grade                        |
+| `concurrent-division-manager`  | Divides integers concurrently with error handling using WaitGroup                  |
+| `api-mock-pinger`              | Pings mock APIs concurrently using goroutines and random delays                    |
+| `file-line-counter`            | Counts lines in multiple files concurrently using bufio.Scanner                    |
+| `word-counter`                 | Counts specific word occurrences across files using Mutex and goroutines           |
 
 > More projects coming soon...
+
+🔗 GitHub: [github.com/lacriman/projects](https://github.com/lacriman/projects)
 
 ---
 
@@ -33,4 +39,4 @@ Each subfolder contains a standalone `main.go` file with zero dependencies beyon
 Each project is self-contained. To run any of them:
 
 ```bash
-go run ./<folder-name>
+go run ./<folder-name>/main.go
