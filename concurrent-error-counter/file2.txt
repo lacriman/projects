@@ -1,0 +1,6 @@
+Initialization complete
+error: network timeout
+Success: backup completed
+Error disk read failure
+INFO: process finished
+Error: user authentication failed

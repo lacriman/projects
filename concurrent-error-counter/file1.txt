@@ -1,0 +1,6 @@
+Error failed to connect to database
+Info: starting system scan
+error: configuration file missing
+Warning: disk space low
+ERROR: unable to parse response
+Note: reboot required
